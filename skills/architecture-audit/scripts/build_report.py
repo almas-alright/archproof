@@ -187,13 +187,20 @@ def verification_html(meta: dict, ledger: dict, report_sha: str, findings_sha: s
     mode = ("Independent verifier agent (fresh context; received only findings and repository access)"
             if ledger.get("verification_mode") == "independent-subagent"
             else "Sequential self-review by the auditing agent (no separate agent available)")
+    def kv(d):
+        return ", ".join(f"{k.replace('_', ' ')}: {v}" for k, v in sorted(d.items())) or "—"
+
+    if ledger.get("depth") == "deep":
+        hy = c.get("hypotheses", {})
+        deep_line = ("Deep: five lenses (hypothesis-driven, red team, debt archaeology, evolutionary architecture, skeptical review). "
+                     f"Hypotheses: {sum(hy.values())} ({kv(hy)}); skeptical-review challenges: "
+                     f"{c.get('skeptical_challenges_resolved', 0)}/{c.get('skeptical_challenges', 0)} resolved")
+    else:
+        deep_line = "Standard"
     checks = "".join(f"<li>{html.escape(x)}</li>" for x in ledger.get("checks", []))
     warns = ledger.get("warnings", [])
     warn_html = (f"<p><strong>Validator warnings ({len(warns)}):</strong></p><ul class='small'>"
                  + "".join(f"<li>{html.escape(w)}</li>" for w in warns[:25]) + "</ul>") if warns else "<p>No validator warnings.</p>"
-
-    def kv(d):
-        return ", ".join(f"{k.replace('_', ' ')}: {v}" for k, v in sorted(d.items())) or "—"
 
     return f"""
 <section class="verification">
@@ -207,6 +214,7 @@ confirmed defects or vulnerabilities.</p>
 <tr><th>Audited baseline</th><td>{html.escape(b.get('type',''))}: <code>{html.escape(str(b.get('commit','')))}</code>
 {('branch ' + html.escape(b['branch'])) if b.get('branch') else ''}
 {'' if b.get('working_tree_clean') is None else ('— working tree clean' if b['working_tree_clean'] else '— working tree had uncommitted changes')}</td></tr>
+<tr><th>Audit depth</th><td>{html.escape(deep_line)}</td></tr>
 <tr><th>Semantic verification</th><td>{html.escape(mode)}</td></tr>
 <tr><th>Mechanical verification</th><td>{html.escape(ledger.get('tool',''))} v{html.escape(ledger.get('tool_version',''))},
 run {html.escape(ledger.get('generated_at',''))} — <strong>{'PASSED' if ledger.get('passed') else 'FAILED'}</strong></td></tr>

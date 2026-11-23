@@ -10,6 +10,7 @@
     "application": "Acme Orders",
     "repository": "github.com/acme/orders (local path ./)",
     "commit": "auto",
+    "depth": "standard",
     "audit_date": "2026-11-23",
     "scope": "Full audit (domains A–P)",
     "authorization_level": "L1",
@@ -57,7 +58,40 @@
 | `related_findings` | opt. | array of IDs | Cross-domain links instead of duplicates |
 | `verification_notes` | ✔ | string | What the verifier checked |
 | `verified_by` | ✔ | `independent-subagent` `sequential-self-review` | |
-| `source` | opt. | `auditor` `verifier` `devils-advocate` | |
+| `source` | opt. | `auditor` `verifier` `devils-advocate` `skeptical-reviewer` | |
+| `lens` | opt. | `hypothesis` `red-team` `debt-archaeology` `evolution` `skeptical-review` | Set on findings a deep lens originated |
+
+`meta.depth` is `standard` (the default) or `deep`. Deep audits must also include the two arrays below.
+
+## Deep-mode arrays (top level, alongside `findings`)
+
+**`hypotheses`**: Lens 1 register.
+
+| Field | Req | Type / enum |
+|---|---|---|
+| `id` | ✔ | `^H-\d{2}$` (two digits, so it is never confused with domain-H finding IDs) |
+| `statement` | ✔ | falsifiable claim |
+| `prior` | ✔ | `High` `Medium` `Low` |
+| `prior_rationale` | ✔ | string |
+| `supporting_evidence_sought` | ✔ | string |
+| `refuting_evidence_sought` | ✔ | string |
+| `method` | ✔ | string (files, greps, git queries, tools) |
+| `status` | ✔ | `SUPPORTED` `REFUTED` `INCONCLUSIVE` |
+| `conclusion` | ✔ | string with evidence (file:line or commit) |
+| `related_findings` | cond. | array of finding IDs; required when `SUPPORTED` |
+| `origin` | opt. | `planned` `emergent` |
+
+**`skeptical_review`**: Lens 5 challenges and their resolutions.
+
+| Field | Req | Type / enum |
+|---|---|---|
+| `id` | ✔ | `^SR-\d{2,3}$` |
+| `target` | ✔ | finding ID or report section |
+| `issue` | ✔ | string |
+| `evidence` | ✔ | string |
+| `required_action` | ✔ | `revise` `downgrade` `upgrade` `add evidence` `remove claim` `no change` |
+| `resolution` | ✔ | what the orchestrator changed, or why no change was needed |
+| `resolved` | ✔ | boolean; every entry must be `true` before the PDF is built |
 
 ## Snippet rules
 

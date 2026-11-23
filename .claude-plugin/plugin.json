@@ -1,8 +1,8 @@
 {
   "name": "archproof",
-  "displayName": "ArchProof — Architecture Audit",
-  "version": "1.0.0",
-  "description": "Evidence-driven software architecture and technical due-diligence audits for any stack: 16 audit domains plus an API platform and gateway profile, a devil's-advocate review, independent verification of every finding, and a downloadable PDF report with a reproducible verification statement.",
+  "displayName": "ArchProof \u2014 Architecture Audit",
+  "version": "1.1.0",
+  "description": "Evidence-driven software architecture and technical due-diligence audits for any stack: 16 audit domains, an API platform and gateway profile, and a deep mode with red-team, hypothesis-driven, skeptical-review, evolutionary-architecture and debt-archaeology lenses. Every finding is independently verified, and the downloadable PDF report carries a reproducible verification statement.",
   "author": {
     "name": "Almas",
     "url": "https://github.com/almas-alright"
@@ -13,16 +13,19 @@
   "supportUrl": "https://github.com/almas-alright/archproof/issues",
   "license": "MIT",
   "keywords": [
+    "api-design",
     "architecture",
     "audit",
-    "due-diligence",
-    "security",
-    "owasp",
-    "database",
-    "performance",
-    "api-design",
-    "technical-debt",
     "code-review",
-    "pdf-report"
+    "database",
+    "due-diligence",
+    "evolutionary-architecture",
+    "owasp",
+    "pdf-report",
+    "performance",
+    "red-team",
+    "security",
+    "technical-debt",
+    "threat-modeling"
   ]
 }

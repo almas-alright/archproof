@@ -27,6 +27,14 @@ EVIDENCE_KINDS = {"STATIC", "RUNTIME", "CONFIG", "HISTORY"}
 COMPLEXITY = {"S", "M", "L", "XL"}
 ROADMAP = {"Immediate", "Short-term", "Medium-term", "Long-term", "None"}
 VERIFIERS = {"independent-subagent", "sequential-self-review"}
+DEPTHS = {"standard", "deep"}
+LENSES = {"hypothesis", "red-team", "debt-archaeology", "evolution", "skeptical-review"}
+SOURCES = {"auditor", "verifier", "devils-advocate", "skeptical-reviewer"}
+HYP_STATUSES = {"SUPPORTED", "REFUTED", "INCONCLUSIVE"}
+SR_ACTIONS = {"revise", "downgrade", "upgrade", "add evidence", "remove claim", "no change"}
+HYP_RE = re.compile(r"^H-\d{2}$")
+SR_RE = re.compile(r"^SR-\d{2,3}$")
+DEEP_APPENDICES = ["Appendix B1", "Appendix B2", "Appendix B3", "Appendix B4", "Appendix B5"]
 ATTACK_KEYS = ["entry_point", "attacker_input", "validation", "authorization", "sink", "mitigations", "preconditions", "impact"]
 REQUIRED = [
     "id", "title", "domain", "type", "severity", "verification_status", "likelihood", "impact",
@@ -152,6 +160,11 @@ def validate(repo: Path, findings_path: Path, report_path: Path | None):
             errors.append(f"meta.{k} is missing")
     if meta.get("verification_mode") and meta["verification_mode"] not in VERIFIERS:
         errors.append(f"meta.verification_mode must be one of {sorted(VERIFIERS)}")
+    depth = meta.get("depth", "standard")
+    if "depth" not in meta:
+        warnings.append("meta.depth missing; assuming 'standard'")
+    if depth not in DEPTHS:
+        errors.append(f"meta.depth must be one of {sorted(DEPTHS)}")
 
     seen = set()
     file_cache: dict[Path, list[str]] = {}
@@ -175,6 +188,12 @@ def validate(repo: Path, findings_path: Path, report_path: Path | None):
                              ("roadmap", ROADMAP), ("verified_by", VERIFIERS)]:
             if key in f and f[key] not in allowed:
                 errors.append(f"{tag} {key}='{f[key]}' not in {sorted(allowed)}")
+        if f.get("lens") is not None and f.get("lens") not in LENSES:
+            errors.append(f"{tag} lens='{f.get('lens')}' not in {sorted(LENSES)}")
+        if f.get("source") is not None and f.get("source") not in SOURCES:
+            errors.append(f"{tag} source='{f.get('source')}' not in {sorted(SOURCES)}")
+        if f.get("lens") and depth != "deep":
+            warnings.append(f"{tag} has lens '{f['lens']}' but meta.depth is not 'deep'")
         sev = f.get("severity")
         if sev not in SEVERITIES:
             errors.append(f"{tag} invalid severity")
@@ -277,6 +296,59 @@ def validate(repo: Path, findings_path: Path, report_path: Path | None):
                     yield from strings(v)
         scan_secrets("\n".join(strings(f)), f"findings.json{tag}", errors)
 
+    # Deep-mode registers
+    hyps = data.get("hypotheses") or []
+    srs = data.get("skeptical_review") or []
+    if depth == "deep":
+        if not hyps:
+            errors.append("deep audit requires a non-empty 'hypotheses' array (Lens 1)")
+        if not srs:
+            errors.append("deep audit requires a 'skeptical_review' array (Lens 5); record 'no change' entries if the review raised nothing")
+        if not any(f.get("lens") == "red-team" for f in findings) and "red-team" not in json.dumps(meta).lower():
+            warnings.append("deep audit has no red-team findings; state in Appendix B2 that the lens found nothing material")
+    hyp_ids = set()
+    for h in hyps:
+        hid = h.get("id", "?")
+        tag = f"[{hid}]"
+        if not HYP_RE.match(str(hid)):
+            errors.append(f"{tag} hypothesis id must match H-NN")
+        if hid in hyp_ids:
+            errors.append(f"{tag} duplicate hypothesis id")
+        hyp_ids.add(hid)
+        for k in ["statement", "prior", "prior_rationale", "supporting_evidence_sought", "refuting_evidence_sought", "method", "status", "conclusion"]:
+            if not str(h.get(k, "")).strip():
+                errors.append(f"{tag} hypothesis missing '{k}'")
+        if h.get("prior") and h["prior"] not in CONFIDENCE:
+            errors.append(f"{tag} prior must be High/Medium/Low")
+        if h.get("status") and h["status"] not in HYP_STATUSES:
+            errors.append(f"{tag} status must be one of {sorted(HYP_STATUSES)}")
+        rel = h.get("related_findings") or []
+        if h.get("status") == "SUPPORTED" and not rel:
+            errors.append(f"{tag} SUPPORTED hypothesis must list related_findings")
+        for r in rel:
+            if r not in seen:
+                errors.append(f"{tag} related finding {r} does not exist")
+    sr_ids = set()
+    for c in srs:
+        cid = c.get("id", "?")
+        tag = f"[{cid}]"
+        if not SR_RE.match(str(cid)):
+            errors.append(f"{tag} skeptical-review id must match SR-NN")
+        if cid in sr_ids:
+            errors.append(f"{tag} duplicate skeptical-review id")
+        sr_ids.add(cid)
+        for k in ["target", "issue", "evidence", "required_action", "resolution"]:
+            if not str(c.get(k, "")).strip():
+                errors.append(f"{tag} skeptical-review entry missing '{k}'")
+        if c.get("required_action") and c["required_action"] not in SR_ACTIONS:
+            errors.append(f"{tag} required_action must be one of {sorted(SR_ACTIONS)}")
+        if c.get("resolved") is not True:
+            errors.append(f"{tag} skeptical-review challenge is unresolved; resolve it before building the report")
+    for f in findings:
+        for r in f.get("related_findings") or []:
+            if r not in seen:
+                warnings.append(f"[{f.get('id')}] related finding {r} does not exist")
+
     # Report cross-check
     report_ids = set()
     if report_path:
@@ -300,6 +372,13 @@ def validate(repo: Path, findings_path: Path, report_path: Path | None):
             if re.search(r"(?i)\b(certified|anthropic[- ]verified|guaranteed secure|fully compliant)\b", text):
                 errors.append("report.md uses attestation language (certified / Anthropic-verified / guaranteed / fully compliant) — not permitted")
             scan_secrets(text, "report.md", errors)
+            if depth == "deep":
+                for ap in DEEP_APPENDICES:
+                    if not re.search(rf"^##\s+{ap}\b", text, re.M):
+                        errors.append(f"deep audit report.md lacks '## {ap} ...' section")
+                for hid in hyp_ids:
+                    if hid not in text:
+                        warnings.append(f"hypothesis {hid} not mentioned in report.md (Appendix B1)")
 
     # Baseline
     commit = git(repo, "rev-parse", "HEAD")
@@ -322,12 +401,13 @@ def validate(repo: Path, findings_path: Path, report_path: Path | None):
 
     ledger = {
         "tool": "ArchProof validate_findings.py",
-        "tool_version": "1.0.0",
+        "tool_version": "1.1.0",
         "generated_at": _dt.datetime.now(_dt.timezone.utc).isoformat(timespec="seconds"),
         "passed": not errors,
         "repository_path": str(repo.resolve()),
         "baseline": baseline,
         "verification_mode": meta.get("verification_mode"),
+        "depth": depth,
         "checksums": {
             "findings.json": sha256_file(findings_path),
             **({"report.md": sha256_file(report_path)} if report_path and report_path.exists() else {}),
@@ -337,6 +417,10 @@ def validate(repo: Path, findings_path: Path, report_path: Path | None):
             "by_status": count("verification_status"),
             "by_severity": count("severity"),
             "by_type": count("type"),
+            "hypotheses": {s_: sum(1 for h in hyps if h.get("status") == s_) for s_ in sorted(HYP_STATUSES)} if hyps else {},
+            "skeptical_challenges": len(srs),
+            "skeptical_challenges_resolved": sum(1 for c in srs if c.get("resolved") is True),
+            "lens_findings": {l: sum(1 for f in findings if f.get("lens") == l) for l in sorted(LENSES) if any(f.get("lens") == l for f in findings)},
             "locations_checked": sum(len(f.get("locations") or []) for f in findings),
             "snippets_matched": sum(1 for f in findings if (f.get("locations") or [{}])[0].get("start_line") is not None) - sum(1 for x in errors if "evidence_snippet not found" in x),
         },
@@ -348,6 +432,7 @@ def validate(repo: Path, findings_path: Path, report_path: Path | None):
             "attack path completeness for vulnerabilities", "runtime evidence/verification fields",
             "report <-> findings ID consistency", "secret-pattern scan of report and findings",
             "no attestation language",
+            "deep mode: hypothesis register, resolved skeptical-review challenges, Appendices B1-B5",
         ],
         "errors": errors,
         "warnings": warnings,

@@ -9,6 +9,7 @@ It is built for CTOs, architects, engineering leads, consultants and technical d
 ## What makes it different
 
 - **Evidence first.** Every finding cites a file, a line range and a verbatim code excerpt. A validator checks that each excerpt really exists at the cited lines. Invented line numbers and "may be vulnerable" padding are rejected.
+- **Deep mode for due diligence.** Red-team, hypothesis-driven, debt-archaeology, evolutionary-architecture and skeptical-review lenses (see below).
 - **Independent verification.** A separate verifier agent, which never sees the auditors' reasoning, re-derives each finding from source and marks it *Confirmed*, *Partially confirmed*, *False positive* or *Unverified*. Only confirmed findings are presented as defects.
 - **A devil's-advocate pass.** Major design decisions and high-severity findings are challenged, mitigations elsewhere in the code are searched for, and strong decisions are recorded as strengths to preserve.
 - **A documented risk model.** Severity is likelihood × impact with explicit caps (for example, CRITICAL requires confirmed evidence with high confidence), kept separate from confidence and verification status.
@@ -36,16 +37,30 @@ An **API platform and gateway profile** activates when the API is the product, t
 
 | Command (Claude Code / Cowork) | What it does |
 |---|---|
-| `/archproof:audit [context]` | Full audit: plan, specialist audits, devil's advocate, verification, report and PDF |
-| `/archproof:security-audit [scope]` | Security and data-privacy audit only |
-| `/archproof:api-audit [focus]` | API platform, API engine or gateway audit |
+| `/archproof:plan [context]` | Scope first: intake, reconnaissance, system inventory and a costed audit plan, with no findings |
+| `/archproof:audit [context]` | Standard full audit: specialist audits, devil's advocate, independent verification, report and PDF |
+| `/archproof:audit-deep [context]` | Everything in `audit`, plus the five deep lenses (below) and report Appendices B1–B5 |
+| `/archproof:security-audit [scope] [deep]` | Security and data-privacy audit only. Add `deep` for the red-team and skeptical-review lenses |
+| `/archproof:api-audit [focus] [deep]` | API platform, API engine or gateway audit. Add `deep` for the adversarial and contract-evolution lenses |
 | `/archproof:verify [output folder]` | Re-verify an existing audit and rebuild the PDF |
+
+### Deep mode: five investigative lenses
+
+| Lens | What it adds |
+|---|---|
+| **Hypothesis-Driven Investigation** | A falsifiable hypothesis register formed before digging in; each hypothesis is concluded as supported, refuted or inconclusive, with evidence |
+| **Red Team / Adversarial Thinking** | Attacker and abuser personas, business-logic abuse, and attack chains that combine minor findings into real impact (thought-experiment only, no exploitation) |
+| **Technical Debt Archaeology** | Git-history hotspots (churn × complexity), hidden change coupling, anonymised knowledge concentration, and how key weaknesses were introduced |
+| **Future-Proofing / Evolutionary Architecture** | Change scenarios from your business context, one-way-door decisions, and automatable fitness functions |
+| **Skeptical Reviewer** | A fresh agent challenges the whole report the way a hostile due-diligence reviewer would; every challenge must be resolved before the PDF is built |
+
+A deep audit takes roughly 1.5–2.5× as long as a standard one. Run `/archproof:plan` first to see the scope.
 
 In chat you can simply ask, for example: *"Run a full architecture audit of this repository. It's a freelance marketplace expecting 10x growth next year. Static analysis only. Give me the PDF."* ArchProof presents an audit plan for approval before any large investigation.
 
 Outputs are written to `architecture-audit-output/<date>/`: `findings.json`, `report.md`, `verification-ledger.json` and `report.pdf`. Existing reports are never overwritten.
 
-In Claude Code and Cowork, ArchProof runs nine bundled specialist agents (architecture, database, security, performance, code quality, distributed systems, infrastructure, API platform, and an independent verifier). In chat, where agents are not available, the same phases run sequentially, and the report states this honestly.
+In Claude Code and Cowork, ArchProof runs up to thirteen bundled specialist agents: architecture, database, security, performance, code quality, distributed systems, infrastructure, API platform, an independent verifier, and, in deep mode, a red-team auditor, debt archaeologist, evolution architect and skeptical reviewer. In chat, where agents are not available, the same phases run sequentially, and the report states this honestly.
 
 ## What it runs, reads and sends (data handling)
 

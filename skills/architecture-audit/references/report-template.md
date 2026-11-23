@@ -120,4 +120,16 @@ A reasoned paragraph for each: architectural maturity, maintainability, security
 | ID | Original claim | Reason rejected |
 ```
 
+### Deep-mode appendices (only when `meta.depth` is `deep`)
+
+Add these after Appendix A, using exactly these headings so the validator can find them. Their content is specified in `deep-audit-lenses.md`:
+
+- `## Appendix B1 — Hypothesis Log`: a table of ID, statement, prior, method, status and conclusion, with related findings
+- `## Appendix B2 — Red-Team Scenarios`
+- `## Appendix B3 — Skeptical Review`
+- `## Appendix B4 — Evolutionary Architecture`
+- `## Appendix B5 — Technical Debt Archaeology`
+
+Also add a "What the deep lenses changed" paragraph to the executive summary (§2).
+
 The Verification Statement is appended automatically. Do not write one yourself.

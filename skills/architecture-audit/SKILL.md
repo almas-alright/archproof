@@ -1,6 +1,6 @@
 ---
 name: architecture-audit
-description: This skill should be used when the user asks to audit an existing application, assess software architecture, perform technical due diligence, investigate security vulnerabilities, evaluate database schemas, review design patterns, identify performance or memory problems, assess technical debt, review an API platform, API engine or gateway, or produce a professional software engineering audit report (Markdown and downloadable PDF). Invoke explicitly with /architecture-audit.
+description: This skill should be used when the user asks to audit an existing application, assess software architecture, perform technical due diligence, investigate security vulnerabilities, evaluate database schemas, review design patterns, identify performance or memory problems, assess technical debt, review an API platform, API engine or gateway, run a deep adversarial or due-diligence-grade audit (red team, hypothesis-driven, debt archaeology, evolutionary architecture, skeptical review), or produce a professional software engineering audit report (Markdown and downloadable PDF). Invoke explicitly with /architecture-audit.
 ---
 
 # Architecture Audit
@@ -58,6 +58,15 @@ Follow `references/audit-methodology.md` for the details of each phase. In short
 
 **Present an audit plan and wait for approval before a large investigation**: scope, domains, partitioning, whether subagents will be used, and what runtime access (if any) is requested. For a small, clearly scoped request (for example "security audit of the auth module"), state the plan in one paragraph and proceed.
 
+### Audit depth: standard vs deep
+
+| Depth | Trigger | What is added |
+|---|---|---|
+| `standard` (default) | `/archproof:audit`, or any ordinary audit request | The workflow above |
+| `deep` | `/archproof:audit-deep`, `deep` in a focused command's arguments, or the user asking for a deep, adversarial or due-diligence-grade audit | Five lenses from `references/deep-audit-lenses.md`: **Hypothesis-Driven Investigation** (Phase 1b), **Red Team / Adversarial Thinking** and **Technical Debt Archaeology** (Phase 3), **Future-Proofing / Evolutionary Architecture** (Phase 4), **Skeptical Reviewer** (Phase 5b). Also adds report Appendices B1–B5 and the `hypotheses` and `skeptical_review` arrays in `findings.json` |
+
+Record the depth in `meta.depth`. A deep audit costs roughly 1.5–2.5× a standard one; say so in the plan. To scope cheaply first, use `/archproof:plan`.
+
 ### Domain map
 
 | Domain | Checklist |
@@ -84,7 +93,7 @@ For a domain-specific request (for example "security only"), run only the domain
 
 ### Subagents
 
-When an agent or subagent tool is available, run Phase 3 domains as parallel specialists (roles and the brief template are in `references/audit-methodology.md`). In Claude Code and Cowork, this plugin ships ready-made agents: `architecture-auditor`, `database-auditor`, `security-auditor`, `performance-auditor`, `code-quality-auditor`, `distributed-systems-auditor`, `infrastructure-auditor`, `api-platform-auditor` and `independent-verifier`. Use them, and still pass each one the full brief. Run Phase 5 as a **fresh** verifier agent that receives only `findings.json` and repository access, not the auditors' reasoning. If no subagents are available, run the phases sequentially and say so in the report's methodology section. Never claim independent agents were used when they were not.
+When an agent or subagent tool is available, run Phase 3 domains as parallel specialists (roles and the brief template are in `references/audit-methodology.md`). In Claude Code and Cowork, this plugin ships ready-made agents: `architecture-auditor`, `database-auditor`, `security-auditor`, `performance-auditor`, `code-quality-auditor`, `distributed-systems-auditor`, `infrastructure-auditor`, `api-platform-auditor` and `independent-verifier`, plus, for deep audits, `red-team-auditor`, `debt-archaeologist`, `evolution-architect` and `skeptical-reviewer` (the last with a fresh context, like the verifier). Use them, and still pass each one the full brief. Run Phase 5 as a **fresh** verifier agent that receives only `findings.json` and repository access, not the auditors' reasoning. If no subagents are available, run the phases sequentially and say so in the report's methodology section. Never claim independent agents were used when they were not.
 
 ## Evidence and findings data
 

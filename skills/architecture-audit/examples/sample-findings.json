@@ -3,6 +3,7 @@
     "application": "orders-api (demo)",
     "repository": "tests/fixtures/orders-api (ArchProof demo fixture)",
     "commit": "auto",
+    "depth": "standard",
     "audit_date": "2026-11-23",
     "scope": "Full audit (domains A–P), demo repository",
     "authorization_level": "L0 (static only)",

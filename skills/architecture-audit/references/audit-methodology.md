@@ -21,6 +21,10 @@ Do not judge yet. Build facts.
 
 Output `inventory.md` with a **system inventory table** (component | type | language/framework | version | entry point | data stores | notes) and the coverage register.
 
+## Phase 1b — Hypothesis Register (deep audits only)
+
+Form the hypothesis register as described in `deep-audit-lenses.md` Lens 1, before any domain investigation. Assign each hypothesis to the domain agent that will test it.
+
 ## Phase 2 — Architecture Discovery
 
 Produce Mermaid diagrams (validate syntax mentally: quote labels with special characters, avoid parentheses in unquoted node labels):
@@ -89,6 +93,10 @@ Also argue *against your own findings*: what mitigation might exist elsewhere (m
 ## Phase 5 — Independent Verification
 
 See `independent-verification.md`. Mandatory for every finding.
+
+## Phase 5b — Skeptical Review (deep audits only)
+
+Have a fresh `skeptical-reviewer` agent (or, without agents, a deliberate separate pass) review the draft report and findings using `deep-audit-lenses.md` Lens 5. Resolve every challenge, record the outcomes in `skeptical_review`, and re-run Phase 5 checks on anything that changed.
 
 ## Phase 6 — Risk Assessment
 

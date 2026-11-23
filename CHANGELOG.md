@@ -2,6 +2,11 @@
 
 All notable changes to ArchProof are documented here. The project follows [Semantic Versioning](https://semver.org/). Raise `version` in `.claude-plugin/plugin.json` with every release.
 
+## [1.2.2] - 2026-11-23
+
+### Changed
+- Example findings no longer combine a URL host, a `${…}` template reference and HTTP-client calls (the directory's credential-forwarding heuristic flagged that combination). The demo fixture's payment client is now a separate module, with no base URL or variables in quoted evidence.
+
 ## [1.2.1] - 2026-11-23
 
 ### Changed

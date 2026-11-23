@@ -132,7 +132,7 @@ There are no tests (L-001). Critical-flow coverage is none for search, detail an
 `src/routes/orders.js:30-35`. Fix: a two-phase flow with an idempotency key and a reconciliation job.
 
 ### I-001 — No PSP timeout
-`src/services/payment.js:4-8`. Fix: a configured client with timeouts and a circuit breaker.
+`src/services/payment.js:4-8` with the client at `src/services/psp-client.js:4`. Fix: a configured client with timeouts and a circuit breaker.
 
 ### G-001 — Unbounded cache
 `src/cache.js:2-10`. Fix: a bounded TTL LRU, or remove the cache.

@@ -179,24 +179,29 @@
           "file": "src/services/payment.js",
           "start_line": 4,
           "end_line": 8
+        },
+        {
+          "file": "src/services/psp-client.js",
+          "start_line": 4,
+          "end_line": 4
         }
       ],
-      "evidence_snippet": "const res = await axios.post(`${PSP_BASE_URL}/captures`, {",
-      "evidence_description": "axios is called without a timeout option; the axios default is 0 (no timeout).",
+      "evidence_snippet": "const res = await pspClient.post(PSP_CAPTURE_PATH, {",
+      "evidence_description": "The payment provider client is created without a timeout option (src/services/psp-client.js:4), and the HTTP library's default is no timeout.",
       "evidence_kind": "STATIC",
-      "root_cause": "No shared HTTP client with default timeouts, retries or circuit breaking.",
+      "root_cause": "No shared HTTP client policy with default timeouts, retries or circuit breaking.",
       "scenario": "The PSP slows down; each pay request holds a pooled DB connection (pool max 20, src/db.js:5) until the PSP responds, and once the pool is exhausted every endpoint stalls.",
       "business_impact": "A slow payment provider can take down order browsing as well as payment.",
       "technical_impact": "DB pool exhaustion and cascading latency.",
       "mitigations": "None found.",
-      "remediation": "Create a configured axios instance (connect/read timeouts, bounded retries with idempotency key, circuit breaker) and move the call outside the transaction (J-001).",
+      "remediation": "Configure the provider client with connect and read timeouts, bounded retries using an idempotency key, and a circuit breaker; move the call outside the transaction (J-001).",
       "remediation_complexity": "S",
       "roadmap": "Short-term",
       "runtime_verification_needed": "With a stub PSP delaying 30 s, send 25 concurrent pay requests locally and observe GET /orders/:id latency; pass if reads stay < 500 ms.",
       "related_findings": [
         "J-001"
       ],
-      "verification_notes": "Confirmed no axios.defaults configuration anywhere in src/.",
+      "verification_notes": "Confirmed no timeout is configured anywhere for the provider client in src/.",
       "verified_by": "independent-subagent",
       "source": "auditor"
     },
@@ -396,8 +401,8 @@
           "end_line": 2
         }
       ],
-      "evidence_snippet": "JWT_ISSUER=https://auth.example.com/",
-      "evidence_description": "The file is .env.example with non-secret settings only; there is no credential material and git history shows no committed real .env.",
+      "evidence_snippet": "LOG_LEVEL=info",
+      "evidence_description": "The file is .env.example with non-secret settings only; there is no credential material, and git history shows no committed real .env.",
       "evidence_kind": "CONFIG",
       "root_cause": "n/a",
       "scenario": "n/a",

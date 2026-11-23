@@ -1,8 +1,8 @@
-const axios = require('axios');
-const { PSP_BASE_URL } = require('../config');
+const pspClient = require('./psp-client');
+const { PSP_CAPTURE_PATH } = require('../config');
 
 async function capturePayment(orderId, amount) {
-  const res = await axios.post(`${PSP_BASE_URL}/captures`, {
+  const res = await pspClient.post(PSP_CAPTURE_PATH, {
     reference: orderId,
     amount,
   });

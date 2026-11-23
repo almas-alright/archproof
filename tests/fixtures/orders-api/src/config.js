@@ -1,4 +1,4 @@
 // Static demo configuration (no environment variables, no credentials).
 module.exports = {
-  PSP_BASE_URL: 'https://psp.example.com',
+  PSP_CAPTURE_PATH: '/captures',
 };

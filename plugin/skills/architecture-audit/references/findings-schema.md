@@ -1,6 +1,6 @@
 # findings.json Schema
 
-`findings.json` is the single source of truth. `report.md` narrates it; `build_report.py` generates the register and risk matrix from it; `validate_findings.py` checks it against the repository.
+`findings.json` is the single source of truth. `report.md` narrates it; the findings register and risk matrix are derived from it (`pdf-report-guide.md`), and the verification procedure checks it against the repository (`verification-procedure.md`).
 
 ## Top level
 

@@ -18,7 +18,7 @@ jobs:
           python-version: "3.12"
       - name: Install PDF dependencies
         run: |
-          pip install -r skills/architecture-audit/scripts/requirements.txt
+          pip install -r tools/requirements.txt
           python -m playwright install --with-deps chromium
       - name: Self-test (validator, negative tests, demo PDF)
         run: bash tests/run_selftest.sh
@@ -33,4 +33,17 @@ jobs:
       - name: Install Claude Code CLI
         run: npm install -g @anthropic-ai/claude-code
       - name: Validate plugin structure and directory requirements
-        run: claude plugin validate . --profile directory
+        run: |
+          claude plugin validate ./plugin --profile directory
+          claude plugin validate .claude-plugin/marketplace.json
+
+  plugin-file-policy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Plugin folder holds only Markdown, text, JSON, YAML and images
+        run: |
+          bad=$(find plugin -type f ! -name '*.md' ! -name '*.txt' ! -name '*.json' ! -name '*.yaml' ! -name '*.yml' ! -name '*.png' ! -name '*.jpg' ! -name '*.jpeg' ! -name '*.gif' ! -name '*.webp' ! -name 'LICENSE')
+          shebang=$(grep -rl '^#!' plugin || true)
+          if [ -n "$bad$shebang" ]; then echo "Disallowed files in plugin/:"; echo "$bad"; echo "$shebang"; exit 1; fi
+          echo "plugin/ file policy OK"

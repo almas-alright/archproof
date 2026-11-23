@@ -78,4 +78,4 @@ Only `CONFIRMED` findings may use the words "confirmed defect" or "confirmed vul
 
 ## 9. Risk matrix
 
-`build_report.py` generates a 4×4 likelihood/impact matrix listing finding IDs per cell from `findings.json` (excluding `STRENGTH` and `FALSE_POSITIVE`). Do not draw it by hand.
+Derive the 4×4 likelihood/impact matrix mechanically from `findings.json`, listing finding IDs per cell and excluding `STRENGTH` and `FALSE_POSITIVE`, as `pdf-report-guide.md` §3 specifies. Never place IDs by judgement.

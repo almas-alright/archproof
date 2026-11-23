@@ -12,7 +12,7 @@
 
 ### Checklist
 
-- [ ] Lockfiles present and committed for every package manager; CI installs from lockfile (`npm ci`, `composer install`, `pip install --require-hashes`/`uv sync --frozen`, `go mod download` with `go.sum`, `dotnet restore --locked-mode`, `bundle install --frozen`).
+- [ ] Lockfiles present and committed for every package manager, and CI installs strictly from them: npm's clean-install mode, Composer installing from the lock, pip hash-checking mode or uv/Poetry frozen sync, Go module checksums (`go.sum`), .NET locked-mode restore, Bundler frozen mode.
 - [ ] Deprecated/abandoned packages (registry deprecation flags, archived repos, no releases > 2 years — verify before claiming).
 - [ ] Known vulnerabilities — run scanners at L1 (see security-review §3 Dependencies); security impact is owned by domain F, inventory here.
 - [ ] Duplicated libraries solving the same problem (two HTTP clients, three date libraries, moment + dayjs).

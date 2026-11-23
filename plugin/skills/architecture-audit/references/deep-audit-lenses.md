@@ -127,7 +127,7 @@ The independent verifier checks findings *one by one* against the code. The skep
 
 ### Output
 
-A list of challenges, each with: target (finding ID or report section), issue, evidence, and required action (`revise`, `downgrade`, `upgrade`, `add evidence`, `remove claim`, `no change` with a justification). The orchestrator must resolve every challenge, and re-run `validate_findings.py` afterwards. Record the challenges and their resolutions in the `skeptical_review` array of `findings.json`, rendered as report **Appendix B3: Skeptical Review**. Unresolved challenges block the final report.
+A list of challenges, each with: target (finding ID or report section), issue, evidence, and required action (`revise`, `downgrade`, `upgrade`, `add evidence`, `remove claim`, `no change` with a justification). The orchestrator must resolve every challenge, and repeat the mechanical evidence check (`verification-procedure.md`) afterwards. Record the challenges and their resolutions in the `skeptical_review` array of `findings.json`, rendered as report **Appendix B3: Skeptical Review**. Unresolved challenges block the final report.
 
 ---
 

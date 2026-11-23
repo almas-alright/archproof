@@ -104,7 +104,7 @@ See `severity-risk-model.md`.
 
 ## Phase 7 — Reporting
 
-See `report-template.md`. Then run `scripts/validate_findings.py` and `scripts/build_report.py`.
+See `report-template.md`. Then run the mechanical evidence check (`verification-procedure.md`) and build the PDF (`pdf-report-guide.md`).
 
 ## Coverage register
 

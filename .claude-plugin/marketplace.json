@@ -10,7 +10,7 @@
   "plugins": [
     {
       "name": "archproof",
-      "source": "./",
+      "source": "./plugin",
       "description": "Evidence-driven architecture and technical due-diligence audits with independent verification and a PDF report.",
       "category": "development"
     }

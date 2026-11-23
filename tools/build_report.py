@@ -25,7 +25,7 @@ import tempfile
 from pathlib import Path
 
 HERE = Path(__file__).resolve().parent
-CSS_PATH = HERE.parent / "assets" / "report.css"
+CSS_PATH = HERE / "report.css"
 SEV_ORDER = ["CRITICAL", "HIGH", "MEDIUM", "LOW", "INFO"]
 L_LABELS = {1: "Rare", 2: "Unlikely", 3: "Likely", 4: "Almost certain"}
 I_LABELS = {1: "Minor", 2: "Moderate", 3: "Major", 4: "Severe"}
@@ -216,7 +216,7 @@ confirmed defects or vulnerabilities.</p>
 {'' if b.get('working_tree_clean') is None else ('— working tree clean' if b['working_tree_clean'] else '— working tree had uncommitted changes')}</td></tr>
 <tr><th>Audit depth</th><td>{html.escape(deep_line)}</td></tr>
 <tr><th>Semantic verification</th><td>{html.escape(mode)}</td></tr>
-<tr><th>Mechanical verification</th><td>{html.escape(ledger.get('tool',''))} v{html.escape(ledger.get('tool_version',''))},
+<tr><th>Mechanical verification</th><td>{html.escape(ledger.get('tool',''))} v{html.escape(ledger.get('tool_version',''))} (mode: {html.escape(ledger.get('mode','tool'))}),
 run {html.escape(ledger.get('generated_at',''))} — <strong>{'PASSED' if ledger.get('passed') else 'FAILED'}</strong></td></tr>
 <tr><th>Findings</th><td>{c.get('total',0)} total · status — {html.escape(kv(st))}</td></tr>
 <tr><th>Severity distribution</th><td>{html.escape(kv(sev))}</td></tr>
@@ -226,8 +226,8 @@ run {html.escape(ledger.get('generated_at',''))} — <strong>{'PASSED' if ledger
 </table>
 <p><strong>Checks performed:</strong></p><ul class="small">{checks}</ul>
 {warn_html}
-<p><strong>How to re-verify:</strong> check out the baseline above, then run<br>
-<code>python3 skills/architecture-audit/scripts/validate_findings.py --repo &lt;repo&gt; --findings findings.json --report report.md</code><br>
+<p><strong>How to re-verify:</strong> check out the baseline above, then repeat the ArchProof verification procedure, or run<br>
+<code>python3 tools/validate_findings.py --repo &lt;repo&gt; --findings findings.json --report report.md</code><br>
 and compare the SHA-256 values. Matching checksums and a PASSED result confirm that the evidence cited in this report
 is present in the audited source.</p>
 <p class="disclaimer">Scope of this statement: it attests that cited evidence exists and that findings passed the documented

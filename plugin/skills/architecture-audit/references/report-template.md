@@ -1,6 +1,6 @@
 # Report Template
 
-Write `report.md` with exactly these 20 numbered sections, in this order. `build_report.py` adds a cover page and the Verification Statement; you write everything else. Use the two generator markers exactly as shown, and the script replaces them with tables built from `findings.json`.
+Write `report.md` with exactly these 20 numbered sections, in this order. The PDF build (`pdf-report-guide.md`) adds a cover page, the contents and the Verification Statement; you write everything else. Use the two markers exactly as shown; during the build they are replaced with tables derived from `findings.json`.
 
 ## Writing rules
 

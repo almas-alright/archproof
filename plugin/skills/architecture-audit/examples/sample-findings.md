@@ -56,6 +56,6 @@ Rejected findings stay in Appendix A, so the reader can see what was checked and
 
 The missing ownership check (F-002) also makes the cache (G-001) serve objects across users. Report the root cause once, under F-002, and link it: `related_findings: ["G-001"]`. Do not file a second "cache leaks data" vulnerability.
 
-## Self-test of the pipeline
+## Testing against the demo
 
-From the plugin root, run `bash tests/run_selftest.sh`. It validates these findings against the demo repository, checks that the validator rejects deliberately broken findings, and builds the demo PDF.
+The project repository contains the demo service these findings cite (`tests/fixtures/orders-api/`) and an automated self-test. They live outside the plugin, so installing the plugin never ships intentionally vulnerable code.

@@ -3,13 +3,14 @@
 # checks that broken findings are rejected, and builds the demo PDF.
 set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-SKILL="$ROOT/skills/architecture-audit"
+SKILL="$ROOT/plugin/skills/architecture-audit"
+TOOLS="$ROOT/tools"
 FIX="$ROOT/tests/fixtures"
 OUT="$(mktemp -d)"
 trap 'rm -rf "$OUT"' EXIT
 
 echo "1/5 validating sample findings against the fixture repository"
-python3 "$SKILL/scripts/validate_findings.py" --repo "$FIX/orders-api" \
+python3 "$TOOLS/validate_findings.py" --repo "$FIX/orders-api" \
   --findings "$SKILL/examples/sample-findings.json" --report "$FIX/orders-api-report.md" \
   --ledger "$OUT/ledger.json"
 
@@ -24,7 +25,7 @@ f[4]["verification_status"] = "UNVERIFIED"; f[4]["severity"] = "HIGH"         # 
 f[0]["evidence_description"] += ' password = "S3cretValue123"'                # leaked secret
 json.dump(d, open(sys.argv[2], "w"))
 PY
-if python3 "$SKILL/scripts/validate_findings.py" --repo "$FIX/orders-api" --findings "$OUT/broken.json" \
+if python3 "$TOOLS/validate_findings.py" --repo "$FIX/orders-api" --findings "$OUT/broken.json" \
      --report "$FIX/orders-api-report.md" --ledger "$OUT/broken-ledger.json" > "$OUT/broken.log"; then
   echo "FAIL: validator accepted broken findings"; exit 1
 fi
@@ -96,9 +97,9 @@ open(f"{out}/deep-report.md", "w").write(r)
 d["skeptical_review"][0]["resolved"] = False
 json.dump(d, open(f"{out}/deep-unresolved.json", "w"), indent=1)
 PY
-python3 "$SKILL/scripts/validate_findings.py" --repo "$FIX/orders-api" --findings "$OUT/deep.json" \
+python3 "$TOOLS/validate_findings.py" --repo "$FIX/orders-api" --findings "$OUT/deep.json" \
   --report "$OUT/deep-report.md" --ledger "$OUT/deep-ledger.json"
-if python3 "$SKILL/scripts/validate_findings.py" --repo "$FIX/orders-api" --findings "$OUT/deep-unresolved.json" \
+if python3 "$TOOLS/validate_findings.py" --repo "$FIX/orders-api" --findings "$OUT/deep-unresolved.json" \
      --report "$OUT/deep-report.md" --ledger "$OUT/deep-bad-ledger.json" > "$OUT/deep-bad.log"; then
   echo "FAIL: unresolved skeptical-review challenge accepted"; exit 1
 fi
@@ -106,12 +107,12 @@ grep -q "unresolved" "$OUT/deep-bad.log" || { echo "FAIL: unresolved challenge n
 echo "    deep mode validated; unresolved challenge correctly blocks"
 
 echo "4/5 building the deep demo PDF"
-python3 "$SKILL/scripts/build_report.py" --report "$OUT/deep-report.md" \
+python3 "$TOOLS/build_report.py" --report "$OUT/deep-report.md" \
   --findings "$OUT/deep.json" --ledger "$OUT/deep-ledger.json" --out "$OUT/deep-report.pdf"
 [ -s "$OUT/deep-report.pdf" ] || { echo "FAIL: deep PDF not produced"; exit 1; }
 
 echo "5/5 building the standard demo PDF"
-python3 "$SKILL/scripts/build_report.py" --report "$FIX/orders-api-report.md" \
+python3 "$TOOLS/build_report.py" --report "$FIX/orders-api-report.md" \
   --findings "$SKILL/examples/sample-findings.json" --ledger "$OUT/ledger.json" --out "$OUT/report.pdf"
 [ -s "$OUT/report.pdf" ] || { echo "FAIL: PDF not produced"; exit 1; }
 if [ -n "${ARCHPROOF_KEEP_PDF:-}" ]; then cp "$OUT/report.pdf" "$ARCHPROOF_KEEP_PDF"; cp "$OUT/deep-report.pdf" "${ARCHPROOF_KEEP_PDF%.pdf}-deep.pdf"; echo "    copied to $ARCHPROOF_KEEP_PDF (+ -deep)"; fi

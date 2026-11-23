@@ -401,7 +401,8 @@ def validate(repo: Path, findings_path: Path, report_path: Path | None):
 
     ledger = {
         "tool": "ArchProof validate_findings.py",
-        "tool_version": "1.1.0",
+        "tool_version": "1.2.0",
+        "mode": "tool",
         "generated_at": _dt.datetime.now(_dt.timezone.utc).isoformat(timespec="seconds"),
         "passed": not errors,
         "repository_path": str(repo.resolve()),

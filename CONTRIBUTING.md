@@ -7,14 +7,14 @@ Thanks for helping improve ArchProof. Contributions that make audits more accura
 - **Evidence over opinion.** New checklist items should describe what to look for in code or configuration, and which evidence confirms or refutes it.
 - **Stack-neutral.** Language-specific guidance goes in tables or clearly labelled bullets, never as the only option.
 - **No fabricated standards.** Cite public standards by name and version. If you are unsure of a version, say "verify current version".
-- **Keep it readable.** Plain Markdown, Python standard library where possible, and no minified or compiled code (the directory security scan requires readable source).
+- **Keep `plugin/` code-free.** It may contain only Markdown, text, JSON, YAML and images: no scripts, no shebangs, and no package-manager files. Optional tooling goes in `tools/`, as readable Python (standard library where possible).
 - **Keep files small.** Every non-image file must stay under 256 KiB, and the plugin under 512 files.
 
 ## Workflow
 
 1. Fork the repository and create a branch.
-2. Make your change. If you change the findings schema or validator rules, update `references/findings-schema.md`, `examples/sample-findings.json` and `tests/run_selftest.sh` together.
-3. Run `bash tests/run_selftest.sh` and `claude plugin validate . --profile directory`.
+2. Make your change. If you change the findings schema or validator rules, update `plugin/skills/architecture-audit/references/findings-schema.md`, `references/verification-procedure.md`, `examples/sample-findings.json`, `tools/validate_findings.py` and `tests/run_selftest.sh` together, so the written procedure and the tool stay equivalent.
+3. Run `bash tests/run_selftest.sh` and `claude plugin validate ./plugin --profile directory`.
 4. Add a line to `CHANGELOG.md` under an "Unreleased" heading.
 5. Open a pull request that explains the motivation and shows before/after output where relevant.
 

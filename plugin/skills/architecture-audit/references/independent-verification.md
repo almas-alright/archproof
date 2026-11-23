@@ -3,7 +3,7 @@
 This is what makes the report "Claude-verified" in a meaningful, checkable sense. It has two layers, and both are mandatory.
 
 1. **Semantic verification**: a reviewer who did not write the findings re-derives each one from the source.
-2. **Mechanical verification**: `scripts/validate_findings.py` proves that every citation is real (files exist, the lines exist, the quoted evidence is present at those lines), that the schema and severity rules hold, that report and data agree, and that no secrets leaked. It writes `verification-ledger.json`, which `build_report.py` turns into the PDF's Verification Statement.
+2. **Mechanical verification**: the step-by-step procedure in `verification-procedure.md` proves that every citation is real (files exist, the lines exist, the quoted evidence is present at those lines), that the schema and severity rules hold, that report and data agree, and that no secrets leaked. It produces `verification-ledger.json`, which the PDF build (`pdf-report-guide.md`) turns into the Verification Statement.
 
 The report may say "independently verified by a separate Claude verification pass and a mechanical evidence check". It must never say "certified", "guaranteed", or "Anthropic-verified". This is a self-contained verification process, not an external attestation.
 
@@ -44,26 +44,10 @@ Common false positives to check for specifically: ORM parameterisation mistaken 
 
 ## Layer 2: mechanical verification
 
-Run it after the semantic pass and after writing `report.md`:
+Follow `verification-procedure.md` exactly, after the semantic pass and after `report.md` is written. Where possible, have it carried out by the same fresh verifier agent, not the agent that wrote the findings.
 
-```bash
-python3 <skill>/scripts/validate_findings.py --repo <repo> --findings <out>/findings.json \
-  --report <out>/report.md --ledger <out>/verification-ledger.json
-```
-
-It checks:
-
-- JSON schema: required fields and enum values.
-- Each `locations[].file` exists under the repo root (path traversal outside the root is rejected).
-- `start_line`/`end_line` are within the file's length.
-- `evidence_snippet` appears (whitespace-normalised) within the cited line range ±2 lines. Snippets with `<REDACTED:…>` are matched piecewise.
-- The rules: CRITICAL needs CONFIRMED + High confidence; DEFECT/VULNERABILITY need CONFIRMED; UNVERIFIED is capped at MEDIUM; STRENGTH is INFO; F-domain VULNERABILITY has all 8 `attack_path` fields; RUNTIME evidence has `runtime_evidence`; `severity` is consistent with likelihood × impact unless `severity_rationale` explains the deviation.
-- Every non-false-positive finding ID appears in `report.md`; every finding ID in `report.md` exists in the JSON.
-- A secret-pattern scan of `report.md` and `findings.json` (private keys, AWS keys, JWTs, generic `password=`/`secret=` values, bearer tokens, connection strings with credentials).
-- It records the repo commit (or a file-tree hash), the SHA-256 of `report.md` and `findings.json`, timestamps, counts per status and severity, and the verifier mode.
-
-Exit code 0 means it passed (warnings allowed); 1 means errors. `build_report.py` refuses to build a PDF from a failing ledger. Fix the cause (correct the line numbers, re-copy the snippet, downgrade, mark UNVERIFIED) and never weaken a check.
+The procedure is deliberately mechanical: open each cited range with line numbers, compare text, apply fixed rules and record every result in the ledger. It leaves no room for judgement calls about whether evidence "roughly" matches. A failure is fixed at its cause (correct the line numbers, re-copy the snippet, downgrade the finding, mark it UNVERIFIED), and the procedure is repeated until every check passes. Never weaken a check, and never build the final PDF from a failing ledger.
 
 ## Reproducibility for the reader
 
-The Verification Statement in the PDF tells any reader how to re-check it: check out the commit, run the validator against the same `findings.json`, and compare the checksums. That gives a CTO or due-diligence reviewer a way to verify the evidence without trusting the auditor.
+The Verification Statement in the PDF tells any reader how to re-check it: check out the commit, repeat the procedure in `verification-procedure.md` (or run the project's automated validator) against the same `findings.json`, and compare the checksums. That gives a CTO or due-diligence reviewer a way to verify the evidence without trusting the auditor.

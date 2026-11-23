@@ -2,6 +2,18 @@
 
 All notable changes to ArchProof are documented here. The project follows [Semantic Versioning](https://semver.org/). Raise `version` in `.claude-plugin/plugin.json` with every release.
 
+## [1.2.0] - 2026-11-23
+
+Directory-compliance release. Community (non-Verified) publishers may ship only Markdown, text, JSON, YAML and images.
+
+### Changed
+- **Repository split:** the plugin now lives in `plugin/` (Markdown, JSON and PNG only). The Python tooling moved to `tools/` and the demo fixture to `tests/fixtures/`; neither ships to users.
+- **Verification is now a written procedure** (`references/verification-procedure.md`) that Claude performs with its standard tools: line-range and verbatim-snippet checks, rules R1–R12, report cross-check, secret scan and deep-mode checks. It writes the same `verification-ledger.json`, with a new `mode` field (`procedural` or `tool`) and per-location `evidence_records`.
+- **The PDF is now built by guide** (`references/pdf-report-guide.md`): document structure, design specification, mechanically derived register and risk matrix, Verification Statement template, rendering preferences, and a quality check.
+- The optional automated validator and builder remain in `tools/` and record `mode: tool`.
+- `plugin.json` keeps only standard fields.
+- CI adds a file-policy check for `plugin/` and validates the marketplace.
+
 ## [1.1.0] - 2026-11-23
 
 ### Added

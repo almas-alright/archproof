@@ -1,7 +1,7 @@
 {
   "name": "archproof",
   "displayName": "ArchProof \u2014 Architecture Audit",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "description": "Evidence-driven software architecture and technical due-diligence audits for any stack: 16 audit domains, an API platform and gateway profile, and a deep mode with red-team, hypothesis-driven, skeptical-review, evolutionary-architecture and debt-archaeology lenses. Every finding is independently verified, and the downloadable PDF report carries a reproducible verification statement.",
   "author": {
     "name": "almas-alright",

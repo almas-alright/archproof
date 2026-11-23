@@ -1,6 +1,6 @@
 # Sample Findings: Calibration Examples
 
-These examples show the quality bar. Pair this file with `sample-findings.json`, which holds the same demo findings in machine format and validates against the plugin's `tests/fixtures/orders-api/` demo repository.
+These examples show the quality bar. The complete machine-readable form of a finding is the worked example in `references/findings-schema.md`.
 
 ## 1. A well-formed confirmed vulnerability
 

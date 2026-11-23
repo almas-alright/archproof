@@ -93,6 +93,41 @@
 | `resolution` | ✔ | what the orchestrator changed, or why no change was needed |
 | `resolved` | ✔ | boolean; every entry must be `true` before the PDF is built |
 
+## Worked example (one complete finding)
+
+```json
+{
+  "id": "C-001",
+  "title": "Monetary amount stored as FLOAT",
+  "domain": "C",
+  "type": "WEAKNESS",
+  "severity": "MEDIUM",
+  "verification_status": "CONFIRMED",
+  "likelihood": 3,
+  "impact": 2,
+  "confidence": "High",
+  "component": "orders table",
+  "locations": [{"file": "migrations/001_init.sql", "start_line": 4, "end_line": 4}],
+  "evidence_snippet": "total FLOAT NOT NULL,",
+  "evidence_description": "orders.total uses binary floating point, and the value is used directly for payment amounts.",
+  "evidence_kind": "STATIC",
+  "root_cause": "No convention for representing money.",
+  "scenario": "A total such as 19.99 is stored as an approximation; sums drift by fractions of a cent and payment amounts can mismatch.",
+  "business_impact": "Reconciliation mismatches with the payment provider.",
+  "technical_impact": "Rounding errors in aggregation and comparison.",
+  "mitigations": "None found (searched later migrations for ALTER of this column).",
+  "remediation": "Migrate to NUMERIC(12,2), or integer minor units plus a currency column, using an expand/contract migration.",
+  "remediation_complexity": "M",
+  "roadmap": "Medium-term",
+  "references": ["CWE-681"],
+  "verification_notes": "Only one migration exists; no later change to the column.",
+  "verified_by": "independent-subagent",
+  "source": "auditor"
+}
+```
+
+For a security finding of type `VULNERABILITY`, also include `attack_path` with its eight keys, as described in the table above.
+
 ## Snippet rules
 
 - Copy the lines **exactly** from the file (indentation may differ; whitespace is normalised when matching).

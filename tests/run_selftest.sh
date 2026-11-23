@@ -4,6 +4,7 @@
 set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SKILL="$ROOT/plugin/skills/architecture-audit"
+SAMPLE="$ROOT/tests/fixtures/orders-api-findings.json"
 TOOLS="$ROOT/tools"
 FIX="$ROOT/tests/fixtures"
 OUT="$(mktemp -d)"
@@ -11,11 +12,11 @@ trap 'rm -rf "$OUT"' EXIT
 
 echo "1/5 validating sample findings against the fixture repository"
 python3 "$TOOLS/validate_findings.py" --repo "$FIX/orders-api" \
-  --findings "$SKILL/examples/sample-findings.json" --report "$FIX/orders-api-report.md" \
+  --findings "$SAMPLE" --report "$FIX/orders-api-report.md" \
   --ledger "$OUT/ledger.json"
 
 echo "2/5 checking that the validator rejects broken findings"
-python3 - "$SKILL/examples/sample-findings.json" "$OUT/broken.json" <<'PY'
+python3 - "$SAMPLE" "$OUT/broken.json" <<'PY'
 import json, sys
 d = json.load(open(sys.argv[1]))
 f = d["findings"]
@@ -35,7 +36,7 @@ done
 echo "    broken findings correctly rejected"
 
 echo "3/5 deep mode: hypotheses, red-team chain, skeptical review, Appendices B1-B5"
-python3 - "$SKILL/examples/sample-findings.json" "$FIX/orders-api-report.md" "$OUT" <<'PY'
+python3 - "$SAMPLE" "$FIX/orders-api-report.md" "$OUT" <<'PY'
 import json, sys
 src, report, out = sys.argv[1], sys.argv[2], sys.argv[3]
 d = json.load(open(src))
@@ -113,7 +114,7 @@ python3 "$TOOLS/build_report.py" --report "$OUT/deep-report.md" \
 
 echo "5/5 building the standard demo PDF"
 python3 "$TOOLS/build_report.py" --report "$FIX/orders-api-report.md" \
-  --findings "$SKILL/examples/sample-findings.json" --ledger "$OUT/ledger.json" --out "$OUT/report.pdf"
+  --findings "$SAMPLE" --ledger "$OUT/ledger.json" --out "$OUT/report.pdf"
 [ -s "$OUT/report.pdf" ] || { echo "FAIL: PDF not produced"; exit 1; }
 if [ -n "${ARCHPROOF_KEEP_PDF:-}" ]; then cp "$OUT/report.pdf" "$ARCHPROOF_KEEP_PDF"; cp "$OUT/deep-report.pdf" "${ARCHPROOF_KEEP_PDF%.pdf}-deep.pdf"; echo "    copied to $ARCHPROOF_KEEP_PDF (+ -deep)"; fi
 echo "ALL CHECKS PASSED"

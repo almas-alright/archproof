@@ -13,7 +13,7 @@ Thanks for helping improve ArchProof. Contributions that make audits more accura
 ## Workflow
 
 1. Fork the repository and create a branch.
-2. Make your change. If you change the findings schema or validator rules, update `plugin/skills/architecture-audit/references/findings-schema.md`, `references/verification-procedure.md`, `examples/sample-findings.json`, `tools/validate_findings.py` and `tests/run_selftest.sh` together, so the written procedure and the tool stay equivalent.
+2. Make your change. If you change the findings schema or validator rules, update `plugin/skills/architecture-audit/references/findings-schema.md`, `references/verification-procedure.md`, `tests/fixtures/orders-api-findings.json`, `tools/validate_findings.py` and `tests/run_selftest.sh` together, so the written procedure and the tool stay equivalent.
 3. Run `bash tests/run_selftest.sh` and `claude plugin validate ./plugin --profile directory`.
 4. Add a line to `CHANGELOG.md` under an "Unreleased" heading.
 5. Open a pull request that explains the motivation and shows before/after output where relevant.

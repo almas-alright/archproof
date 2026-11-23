@@ -97,7 +97,7 @@ When an agent or subagent tool is available, run Phase 3 domains as parallel spe
 
 ## Evidence and findings data
 
-Every finding is a JSON object in `findings.json` that follows `references/findings-schema.md`. That file is the single source of truth: the report's findings register and the PDF's verification statement are generated from it. Each finding needs an ID, title, domain, type, severity, verification status, component, file, line range, a verbatim `evidence_snippet` (redacted where needed), root cause, scenario, business and technical impact, likelihood, confidence, mitigations, remediation and remediation complexity. See `examples/sample-findings.md` and `examples/sample-findings.json`. The demo repository they cite lives in the project repository's `tests/fixtures/orders-api/`, outside the plugin.
+Every finding is a JSON object in `findings.json` that follows `references/findings-schema.md`. That file is the single source of truth: the report's findings register and the PDF's verification statement are generated from it. Each finding needs an ID, title, domain, type, severity, verification status, component, file, line range, a verbatim `evidence_snippet` (redacted where needed), root cause, scenario, business and technical impact, likelihood, confidence, mitigations, remediation and remediation complexity. `references/findings-schema.md` contains a complete worked example, and `examples/sample-findings.md` shows the quality bar with good and bad examples.
 
 Report each root cause **once**, under the domain that owns it, and cross-reference it from other domains instead of duplicating it.
 

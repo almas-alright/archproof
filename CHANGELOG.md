@@ -2,6 +2,11 @@
 
 All notable changes to ArchProof are documented here. The project follows [Semantic Versioning](https://semver.org/). Raise `version` in `.claude-plugin/plugin.json` with every release.
 
+## [1.2.4] - 2026-11-23
+
+### Changed
+- The machine-readable example findings moved out of the plugin to `tests/fixtures/orders-api-findings.json`, where they remain the self-test input. The directory's credential heuristic read that JSON file as a credential configuration. The plugin keeps a complete worked example in `references/findings-schema.md`, plus the written examples.
+
 ## [1.2.3] - 2026-11-23
 
 ### Changed

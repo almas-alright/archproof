@@ -385,7 +385,7 @@
     },
     {
       "id": "F-004",
-      "title": "Committed environment file contains secrets",
+      "title": "Suspected SQL injection in order detail lookup",
       "domain": "F",
       "type": "RISK",
       "severity": "INFO",
@@ -393,26 +393,29 @@
       "likelihood": 1,
       "impact": 1,
       "confidence": "High",
-      "component": "Configuration",
+      "component": "Orders API — order detail endpoint",
       "locations": [
         {
-          "file": ".env.example",
-          "start_line": 2,
-          "end_line": 2
+          "file": "src/routes/orders.js",
+          "start_line": 19,
+          "end_line": 19
         }
       ],
-      "evidence_snippet": "LOG_LEVEL=info",
-      "evidence_description": "The file is .env.example with non-secret settings only; there is no credential material, and git history shows no committed real .env.",
-      "evidence_kind": "CONFIG",
-      "root_cause": "n/a",
+      "evidence_snippet": "const { rows } = await pool.query('SELECT * FROM orders WHERE id = $1', [req.params.id]);",
+      "evidence_description": "The draft flagged req.params.id flowing into a SQL query. The value is passed as a bound parameter ($1), so the driver sends it separately from the SQL text.",
+      "evidence_kind": "STATIC",
+      "root_cause": "n/a (rejected)",
       "scenario": "n/a",
       "business_impact": "None",
       "technical_impact": "None",
-      "mitigations": "Placeholder values only.",
-      "remediation": "None required.",
+      "mitigations": "Parameterised query via the database driver.",
+      "remediation": "None required for injection. The real issue on this line is authorisation (F-002).",
       "remediation_complexity": "S",
       "roadmap": "None",
-      "verification_notes": "Rejected by verifier: example file, no values; git log -p shows no real .env.",
+      "related_findings": [
+        "F-002"
+      ],
+      "verification_notes": "Rejected by verifier: placeholder binding, not string concatenation; contrast with F-001, where concatenation is real.",
       "verified_by": "independent-subagent",
       "source": "auditor"
     }

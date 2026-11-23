@@ -86,7 +86,7 @@ Introducing a full repository layer is not justified yet. A single ownership-awa
 | GET /orders/:id | JWT | `id` | F-002 |
 | POST /orders/:id/pay | JWT | `id` | Owner-scoped; see J-001 |
 
-Authentication is sound (F-003). Authorisation is inconsistent (F-002). A candidate finding about committed secrets was rejected during verification (Appendix A). No dependency scan was run at L0.
+Authentication is sound (F-003). Authorisation is inconsistent (F-002). A suspected injection on the detail endpoint was rejected during verification as safely parameterised (Appendix A). No dependency scan was run at L0.
 
 ## 8. Performance and Memory Assessment
 
@@ -193,4 +193,4 @@ The architecture is simple and proportionate to the service's size, and maintain
 
 | ID | Original claim | Reason rejected |
 |---|---|---|
-| F-004 | Committed env file contains secrets | `.env.example` holds placeholders only |
+| F-004 | SQL injection in order detail lookup | Value is a bound parameter (`$1`); the real issue is authorisation (F-002) |

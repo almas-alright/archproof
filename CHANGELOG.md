@@ -2,6 +2,11 @@
 
 All notable changes to ArchProof are documented here. The project follows [Semantic Versioning](https://semver.org/). Raise `version` in `.claude-plugin/plugin.json` with every release.
 
+## [1.2.3] - 2026-11-23
+
+### Changed
+- The false-positive example (F-004) is now "suspected SQL injection that is safely parameterised" instead of "committed environment file". It is a more common real-world false positive, and it no longer resembles reading the installer's credentials (which cleared the directory's credential-forwarding hold).
+
 ## [1.2.2] - 2026-11-23
 
 ### Changed

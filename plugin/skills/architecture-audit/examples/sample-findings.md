@@ -44,9 +44,9 @@ Absence findings cite the location where the control belongs and record the sear
 
 ## 6. A false positive rejected by the verifier
 
-> **F-004: Committed environment file contains secrets** → FALSE_POSITIVE. The file is `.env.example` with placeholders, and git history contains no real `.env`.
+> **F-004: Suspected SQL injection in order detail lookup** → FALSE_POSITIVE. `src/routes/orders.js:19` passes `req.params.id` as a bound parameter (`$1`), not by string concatenation. The verifier contrasted it with F-001, where concatenation is real, and linked the genuine problem on that line (missing ownership check) to F-002.
 
-Rejected findings stay in Appendix A, so the reader can see what was checked and why it was dismissed.
+Rejected findings stay in Appendix A, so the reader can see what was checked and why it was dismissed. Mistaking parameterised queries for injection is one of the most common false positives; the verifier checks for it explicitly.
 
 ## 7. Trade-off versus defect
 

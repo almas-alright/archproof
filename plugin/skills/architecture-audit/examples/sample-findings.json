@@ -8,7 +8,12 @@
     "scope": "Full audit (domains A–P), demo repository",
     "authorization_level": "L0 (static only)",
     "verification_mode": "independent-subagent",
-    "standards": ["ISO/IEC 25010:2023", "OWASP ASVS 5.0", "OWASP Top 10 (edition per auditor knowledge, unverified)", "CWE"],
+    "standards": [
+      "ISO/IEC 25010:2023",
+      "OWASP ASVS 5.0",
+      "OWASP Top 10 (edition per auditor knowledge, unverified)",
+      "CWE"
+    ],
     "auditor": "Claude with the ArchProof plugin",
     "classification": "Confidential — demo"
   },
@@ -25,8 +30,16 @@
       "confidence": "High",
       "component": "Orders API — search endpoint",
       "locations": [
-        {"file": "src/routes/orders.js", "start_line": 8, "end_line": 12},
-        {"file": "src/server.js", "start_line": 8, "end_line": 8}
+        {
+          "file": "src/routes/orders.js",
+          "start_line": 8,
+          "end_line": 12
+        },
+        {
+          "file": "src/server.js",
+          "start_line": 8,
+          "end_line": 8
+        }
       ],
       "evidence_snippet": "const sql = \"SELECT id, total, status FROM orders WHERE user_id = $1 AND status = '\" + status + \"'\";",
       "evidence_description": "The status query parameter is concatenated into the SQL text; only user_id is bound as a parameter.",
@@ -49,8 +62,14 @@
         "preconditions": "Any authenticated user",
         "impact": "Read access to all orders; further DB access depending on role"
       },
-      "references": ["CWE-89", "OWASP A03 Injection", "ASVS V1 (encoding and sanitisation)"],
-      "related_findings": ["L-001"],
+      "references": [
+        "CWE-89",
+        "OWASP A03 Injection",
+        "ASVS V1 (encoding and sanitisation)"
+      ],
+      "related_findings": [
+        "L-001"
+      ],
       "verification_notes": "Re-read handler and server mounting; confirmed no global validation middleware; pg does not sanitise concatenated text.",
       "verified_by": "independent-subagent",
       "source": "auditor"
@@ -66,7 +85,13 @@
       "impact": 3,
       "confidence": "High",
       "component": "Orders API — order detail endpoint",
-      "locations": [{"file": "src/routes/orders.js", "start_line": 19, "end_line": 19}],
+      "locations": [
+        {
+          "file": "src/routes/orders.js",
+          "start_line": 19,
+          "end_line": 19
+        }
+      ],
       "evidence_snippet": "const { rows } = await pool.query('SELECT * FROM orders WHERE id = $1', [req.params.id]);",
       "evidence_description": "Order is loaded by ID only, without filtering by req.user.sub; the result is returned in full.",
       "evidence_kind": "STATIC",
@@ -88,8 +113,13 @@
         "preconditions": "Any authenticated user",
         "impact": "Read any order record"
       },
-      "references": ["CWE-639", "OWASP API1:2023 BOLA"],
-      "related_findings": ["G-001"],
+      "references": [
+        "CWE-639",
+        "OWASP API1:2023 BOLA"
+      ],
+      "related_findings": [
+        "G-001"
+      ],
       "verification_notes": "Confirmed no ownership middleware on the router; compared with the pay route, which filters by user_id.",
       "verified_by": "independent-subagent",
       "source": "auditor"
@@ -105,7 +135,13 @@
       "impact": 4,
       "confidence": "High",
       "component": "Orders API — payment flow",
-      "locations": [{"file": "src/routes/orders.js", "start_line": 30, "end_line": 35}],
+      "locations": [
+        {
+          "file": "src/routes/orders.js",
+          "start_line": 30,
+          "end_line": 35
+        }
+      ],
       "evidence_snippet": "const result = await capturePayment(rows[0].id, rows[0].total);",
       "evidence_description": "The external capture happens between BEGIN and COMMIT; if the UPDATE or COMMIT fails after a successful capture, the order remains unpaid while the customer is charged.",
       "evidence_kind": "STATIC",
@@ -117,8 +153,12 @@
       "remediation": "Mark the order 'capturing' with SELECT ... FOR UPDATE and commit; call the PSP outside the transaction with the order ID as idempotency key; record the result in a second transaction; add a reconciliation job.",
       "remediation_complexity": "M",
       "roadmap": "Short-term",
-      "references": ["CWE-362"],
-      "related_findings": ["I-001"],
+      "references": [
+        "CWE-362"
+      ],
+      "related_findings": [
+        "I-001"
+      ],
       "verification_notes": "Traced the full handler; confirmed no status guard (already-paid orders can be re-captured) and no lock.",
       "verified_by": "independent-subagent",
       "source": "devils-advocate"
@@ -134,8 +174,14 @@
       "impact": 3,
       "confidence": "High",
       "component": "Payment service client",
-      "locations": [{"file": "src/services/payment.js", "start_line": 4, "end_line": 7}],
-      "evidence_snippet": "const res = await axios.post(`${process.env.PSP_URL}/captures`, {",
+      "locations": [
+        {
+          "file": "src/services/payment.js",
+          "start_line": 4,
+          "end_line": 8
+        }
+      ],
+      "evidence_snippet": "const res = await axios.post(`${PSP_BASE_URL}/captures`, {",
       "evidence_description": "axios is called without a timeout option; the axios default is 0 (no timeout).",
       "evidence_kind": "STATIC",
       "root_cause": "No shared HTTP client with default timeouts, retries or circuit breaking.",
@@ -147,7 +193,9 @@
       "remediation_complexity": "S",
       "roadmap": "Short-term",
       "runtime_verification_needed": "With a stub PSP delaying 30 s, send 25 concurrent pay requests locally and observe GET /orders/:id latency; pass if reads stay < 500 ms.",
-      "related_findings": ["J-001"],
+      "related_findings": [
+        "J-001"
+      ],
       "verification_notes": "Confirmed no axios.defaults configuration anywhere in src/.",
       "verified_by": "independent-subagent",
       "source": "auditor"
@@ -163,7 +211,13 @@
       "impact": 2,
       "confidence": "Medium",
       "component": "src/cache.js",
-      "locations": [{"file": "src/cache.js", "start_line": 2, "end_line": 10}],
+      "locations": [
+        {
+          "file": "src/cache.js",
+          "start_line": 2,
+          "end_line": 10
+        }
+      ],
       "evidence_snippet": "const cache = new Map();",
       "evidence_description": "Module-level Map with no size limit, TTL or eviction; entries are added on every cache miss and never removed or invalidated after payment updates.",
       "evidence_kind": "STATIC",
@@ -176,7 +230,9 @@
       "remediation_complexity": "S",
       "roadmap": "Short-term",
       "runtime_verification_needed": "Run locally with --inspect, request 50k distinct order IDs, and take 3 heap snapshots; confirm the Map's retained size grows linearly and is never collected.",
-      "related_findings": ["F-002"],
+      "related_findings": [
+        "F-002"
+      ],
       "verification_notes": "Pattern confirmed statically; growth magnitude not measured (no runtime authorisation).",
       "verified_by": "independent-subagent",
       "source": "auditor"
@@ -192,7 +248,13 @@
       "impact": 2,
       "confidence": "High",
       "component": "orders table",
-      "locations": [{"file": "migrations/001_init.sql", "start_line": 4, "end_line": 4}],
+      "locations": [
+        {
+          "file": "migrations/001_init.sql",
+          "start_line": 4,
+          "end_line": 4
+        }
+      ],
       "evidence_snippet": "total FLOAT NOT NULL,",
       "evidence_description": "orders.total uses binary floating point; the value is sent directly to the PSP.",
       "evidence_kind": "STATIC",
@@ -204,7 +266,9 @@
       "remediation": "Migrate to NUMERIC(12,2) or integer minor units with a currency column (expand/contract migration).",
       "remediation_complexity": "M",
       "roadmap": "Medium-term",
-      "references": ["CWE-681"],
+      "references": [
+        "CWE-681"
+      ],
       "verification_notes": "Only one migration exists; no later ALTER.",
       "verified_by": "independent-subagent",
       "source": "auditor"
@@ -220,7 +284,18 @@
       "impact": 2,
       "confidence": "Medium",
       "component": "orders table",
-      "locations": [{"file": "migrations/001_init.sql", "start_line": 3, "end_line": 3}, {"file": "src/routes/orders.js", "start_line": 10, "end_line": 10}],
+      "locations": [
+        {
+          "file": "migrations/001_init.sql",
+          "start_line": 3,
+          "end_line": 3
+        },
+        {
+          "file": "src/routes/orders.js",
+          "start_line": 10,
+          "end_line": 10
+        }
+      ],
       "evidence_snippet": "user_id TEXT NOT NULL,",
       "evidence_description": "The schema defines only the primary key index; search filters by user_id and status.",
       "evidence_kind": "STATIC",
@@ -248,7 +323,13 @@
       "impact": 2,
       "confidence": "High",
       "component": "Repository",
-      "locations": [{"file": "package.json", "start_line": 7, "end_line": 7}],
+      "locations": [
+        {
+          "file": "package.json",
+          "start_line": 7,
+          "end_line": 7
+        }
+      ],
       "evidence_snippet": "\"scripts\": { \"start\": \"node src/server.js\", \"test\": \"node --test\" },",
       "evidence_description": "A test script exists but the repository contains no test files, so authorisation, injection and payment paths are untested.",
       "evidence_kind": "STATIC",
@@ -275,7 +356,13 @@
       "impact": 1,
       "confidence": "High",
       "component": "Auth middleware",
-      "locations": [{"file": "src/middleware/auth.js", "start_line": 8, "end_line": 12}],
+      "locations": [
+        {
+          "file": "src/middleware/auth.js",
+          "start_line": 8,
+          "end_line": 12
+        }
+      ],
       "evidence_snippet": "algorithms: ['RS256'],",
       "evidence_description": "jwt.verify is called with an explicit RS256 allow-list plus aud and iss checks, preventing alg-confusion and token reuse across services.",
       "evidence_kind": "STATIC",
@@ -302,9 +389,15 @@
       "impact": 1,
       "confidence": "High",
       "component": "Configuration",
-      "locations": [{"file": ".env.example", "start_line": 2, "end_line": 2}],
-      "evidence_snippet": "JWT_PUBLIC_KEY=",
-      "evidence_description": "The file is .env.example with empty or placeholder values only; there is no secret material and git history has a single commit.",
+      "locations": [
+        {
+          "file": ".env.example",
+          "start_line": 2,
+          "end_line": 2
+        }
+      ],
+      "evidence_snippet": "JWT_ISSUER=https://auth.example.com/",
+      "evidence_description": "The file is .env.example with non-secret settings only; there is no credential material and git history shows no committed real .env.",
       "evidence_kind": "CONFIG",
       "root_cause": "n/a",
       "scenario": "n/a",

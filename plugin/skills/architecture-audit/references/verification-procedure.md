@@ -85,7 +85,7 @@ Search with these patterns (extended regex, case-insensitive where noted). Any m
 | Bearer token (case-insensitive) | `Bearer +[A-Za-z0-9._~+/-]{20,}` |
 | Assigned secret (case-insensitive) | `(password\|passwd\|pwd\|secret\|api[_-]?key\|access[_-]?token\|auth[_-]?token\|client[_-]?secret) *[:=] *['"]?[^ '",;)<]{8,}` |
 
-For the last pattern, ignore obvious non-values: environment references (`${…}`, `process.env`, `os.environ`, `getenv`, `env(`), `null`, `None`, `true`, `false`, `changeme`, `example`, `xxx…` and `***`. Record each match you dismiss, with the reason, as a warning.
+For the last pattern, ignore obvious non-values: template placeholders such as `${…}` or `{{…}}`, lookups of a named setting through the language's configuration or environment API (the value itself is not present), `null`, `None`, `true`, `false`, `changeme`, `example`, runs of `x` and runs of `*`. Record each match you dismiss, with the reason, as a warning.
 
 ## Step 6: Deep-mode checks (only when `meta.depth` is `deep`)
 

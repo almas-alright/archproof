@@ -2,6 +2,13 @@
 
 All notable changes to ArchProof are documented here. The project follows [Semantic Versioning](https://semver.org/). Raise `version` in `.claude-plugin/plugin.json` with every release.
 
+## [1.2.1] - 2026-11-23
+
+### Changed
+- Examples no longer quote code that reads environment variables. The demo fixture now uses a static config module, so the directory's credential check has nothing to flag.
+- The secret-scan guidance describes environment lookups generically.
+- Author and marketplace owner set to `almas-alright`, to avoid confusion with an existing listing.
+
 ## [1.2.0] - 2026-11-23
 
 Directory-compliance release. Community (non-Verified) publishers may ship only Markdown, text, JSON, YAML and images.

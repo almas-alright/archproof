@@ -71,6 +71,10 @@ In Claude Code and Cowork, ArchProof runs up to thirteen bundled specialist agen
 - **Secrets** found during an audit are redacted as `<REDACTED:type>`, and the verification procedure blocks the PDF if anything that looks like a credential leaks into the report.
 - **Stores** outputs only in the local `architecture-audit-output/` folder.
 
+## Privacy
+
+ArchProof sends no data anywhere and retains nothing. See the full [Privacy Policy](PRIVACY.md).
+
 ## Limits
 
 ArchProof's verification attests that the cited evidence exists and that findings passed a documented procedure. It is not a certification, a penetration test or a compliance attestation. Runtime behaviour (memory leaks, throughput) is confirmed only when you authorise measurement. Otherwise those findings are reported as risks, with the exact test needed to confirm them.

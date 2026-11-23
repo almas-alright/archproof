@@ -2,6 +2,11 @@
 
 All notable changes to ArchProof are documented here. The project follows [Semantic Versioning](https://semver.org/). Raise `version` in `.claude-plugin/plugin.json` with every release.
 
+## [1.2.5] - 2026-11-23
+
+### Added
+- Privacy policy (`plugin/PRIVACY.md`), linked from the README and `privacyPolicyUrl` in `plugin.json`.
+
 ## [1.2.4] - 2026-11-23
 
 ### Changed
